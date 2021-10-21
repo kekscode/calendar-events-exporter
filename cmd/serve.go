@@ -24,7 +24,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/kekscode/calendar-events-exporter/pkg/calendar"
+	"github.com/kekscode/calendar-events-exporter/pkg/icalmetrics"
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +38,7 @@ var serveCmd = &cobra.Command{
 		if err != nil {
 			fmt.Printf("error: icalendar target url not valid: %v", err)
 		}
-		cal := calendar.NewCalendar(url)
+		cal := icalmetrics.NewCalendarMetrics(url)
 		fmt.Print(cal)
 	},
 }

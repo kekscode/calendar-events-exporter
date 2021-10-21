@@ -1,4 +1,4 @@
-package calendar
+package icalmetrics 
 
 import (
 	"fmt"
@@ -7,10 +7,10 @@ import (
 	ical "github.com/arran4/golang-ical"
 )
 
-type Calendar struct{}
+type CalendarMetrics struct{}
 
-func NewCalendar(calendarURL string) Calendar {
-	c := Calendar{}
+func NewCalendarMetrics(calendarURL string) CalendarMetrics {
+	c := CalendarMetrics{}
 	resp, err := http.Get(calendarURL)
 	if err != nil {
 		fmt.Println("cannot fetch calendar: ", err)
@@ -24,7 +24,7 @@ func NewCalendar(calendarURL string) Calendar {
 		return c
 	}
 
-	fmt.Printf("%v", content)
+	fmt.Printf("%v", content.Events())
 
 	return c
 }
