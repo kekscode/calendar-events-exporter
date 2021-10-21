@@ -23,8 +23,10 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/kekscode/calendar-events-exporter/pkg/icalmetrics"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 )
 
@@ -40,6 +42,8 @@ var serveCmd = &cobra.Command{
 		}
 		cal := icalmetrics.NewCalendarMetrics(url)
 		fmt.Print(cal)
+		http.Handle("/metrics", promhttp.Handler())
+		http.ListenAndServe(":9310", nil)
 	},
 }
 
