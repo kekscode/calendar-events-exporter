@@ -3,6 +3,7 @@ module github.com/kekscode/calendar-events-exporter
 go 1.17
 
 require (
+	github.com/arran4/golang-ical v0.0.0-20210825232153-efac1f4cb8ac
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0

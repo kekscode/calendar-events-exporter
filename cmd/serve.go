@@ -34,8 +34,12 @@ var serveCmd = &cobra.Command{
 	Short: "Serve starts the exporter serving metrics",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		cal := calendar.NewCalendar()
-		fmt.Printf("%v", cal)
+		url, err := cmd.Flags().GetString("icalendar-url")
+		if err != nil {
+			fmt.Printf("error: icalendar target url not valid: %v", err)
+		}
+		cal := calendar.NewCalendar(url)
+		fmt.Print(cal)
 	},
 }
 
@@ -48,7 +52,7 @@ func init() {
 	// and all subcommands, e.g.:
 	// serveCmd.PersistentFlags().String("foo", "", "A help for foo")
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// serveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// Cobra also supports local flags, which will only run
+	// when this action is called directly.
+	serveCmd.Flags().StringP("icalendar-url", "u", "file:///calendar.ics", "Location of the iCalendar file to monitor")
 }
