@@ -14,6 +14,7 @@ type calendars struct {
 type calendar struct {
 	URL      string
 	calendar *ics.Calendar
+	vevents  []*ics.VEvent
 }
 
 // NewCalendards returns a new Calendars struct
@@ -24,6 +25,7 @@ func newCalendars(targets []string) *calendars {
 		c.calendars = append(c.calendars, calendar{
 			URL:      target,
 			calendar: ics.NewCalendarFor(target),
+			vevents:  c.updateCalendars(),
 		},
 		)
 	}
@@ -31,7 +33,9 @@ func newCalendars(targets []string) *calendars {
 }
 
 // updateCalendars updates the Calendars struct with the latest content from the targets
-func (c *calendars) updateCalendars() error {
+func (c *calendars) updateCalendars() []*ics.VEvent {
+	var vevents []*ics.VEvent
+
 	for _, target := range c.calendars {
 		resp, err := http.Get(target.URL)
 		if err != nil {
@@ -43,6 +47,13 @@ func (c *calendars) updateCalendars() error {
 		if err != nil {
 			log.Println("cannot parse calendar data: ", err)
 		}
+
+		vevents = append(vevents, target.calendar.Events()...)
 	}
-	return nil
+
+	if len(vevents) > 0 {
+		return vevents
+	}
+
+	return []*ics.VEvent{}
 }

@@ -1,6 +1,8 @@
 package calendar
 
 import (
+	"fmt"
+
 	ics "github.com/arran4/golang-ical"
 )
 
@@ -12,12 +14,13 @@ type Monitor struct {
 func NewMonitor(targets []string) (*Monitor, error) {
 
 	mon := Monitor{}
-	cals := newCalendars(targets)
 
+	cals := newCalendars(targets)
 	cals.updateCalendars()
 
 	for _, e := range cals.calendars {
-		mon.Events = e.calendar.Events()
+		fmt.Printf("%v", e.calendar.Events())
+		mon.Events = append(mon.Events, e.calendar.Events()...)
 	}
 
 	return &mon, nil
