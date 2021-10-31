@@ -17,11 +17,11 @@ type calendar struct {
 }
 
 // NewCalendards returns a new Calendars struct
-func newCalendars(targets []string) *[]calendar {
-	c := []calendar{}
+func newCalendars(targets []string) *calendars {
+	c := calendars{}
 
 	for _, target := range targets {
-		c = append(c, calendar{
+		c.calendars = append(c.calendars, calendar{
 			URL:      target,
 			calendar: ics.NewCalendarFor(target),
 		},
@@ -30,7 +30,7 @@ func newCalendars(targets []string) *[]calendar {
 	return &c
 }
 
-// UpdateCalendars updates the Calendars struct with the latest content from the targets
+// updateCalendars updates the Calendars struct with the latest content from the targets
 func (c *calendars) updateCalendars() error {
 	for _, target := range c.calendars {
 		resp, err := http.Get(target.URL)
