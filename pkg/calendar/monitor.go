@@ -18,9 +18,9 @@ func NewMonitor(targets []string) (*Monitor, error) {
 	cals := newCalendars(targets)
 	cals.updateCalendars()
 
-	for _, e := range cals.calendars {
-		fmt.Printf("%v", e.calendar.Events())
-		mon.Events = append(mon.Events, e.calendar.Events()...)
+	for _, e := range cals.vevents {
+		fmt.Printf("%v", e.GetProperty("SUMMARY"))
+		mon.Events = append(mon.Events, e)
 	}
 
 	return &mon, nil
