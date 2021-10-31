@@ -9,12 +9,12 @@ import (
 
 type calendars struct {
 	calendars []calendar
+	vevents   []*ics.VEvent
 }
 
 type calendar struct {
 	URL      string
 	calendar *ics.Calendar
-	vevents  []*ics.VEvent
 }
 
 // NewCalendards returns a new Calendars struct
@@ -25,7 +25,6 @@ func newCalendars(targets []string) *calendars {
 		c.calendars = append(c.calendars, calendar{
 			URL:      target,
 			calendar: ics.NewCalendarFor(target),
-			vevents:  c.updateCalendars(),
 		},
 		)
 	}
@@ -33,7 +32,7 @@ func newCalendars(targets []string) *calendars {
 }
 
 // updateCalendars updates the Calendars struct with the latest content from the targets
-func (c *calendars) updateCalendars() []*ics.VEvent {
+func (c *calendars) updateCalendars() {
 	var vevents []*ics.VEvent
 
 	for _, target := range c.calendars {
@@ -48,12 +47,6 @@ func (c *calendars) updateCalendars() []*ics.VEvent {
 			log.Println("cannot parse calendar data: ", err)
 		}
 
-		vevents = append(vevents, target.calendar.Events()...)
+		c.vevents = append(vevents, target.calendar.Events()...)
 	}
-
-	if len(vevents) > 0 {
-		return vevents
-	}
-
-	return []*ics.VEvent{}
 }
