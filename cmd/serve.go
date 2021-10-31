@@ -46,9 +46,14 @@ var serveCmd = &cobra.Command{
 			log.Printf("Error loading calendar monitor: %v", mon)
 		}
 
+		log.Printf("%v", mon.Events)
+
 		for _, e := range mon.Events {
 			s, _ := e.GetStartAt()
+			sb, _ := e.GetAllDayStartAt()
+			log.Printf("%v\n", e)
 			log.Printf("%v\n", s)
+			log.Printf("%v\n", sb)
 		}
 
 		http.Handle("/metrics", promhttp.Handler())

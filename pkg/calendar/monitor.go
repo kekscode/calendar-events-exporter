@@ -5,7 +5,7 @@ import (
 )
 
 type Monitor struct {
-	Events []ics.VEvent
+	Events []*ics.VEvent
 }
 
 // NewMonitor returns a new calendar monitor
@@ -15,6 +15,10 @@ func NewMonitor(targets []string) (*Monitor, error) {
 	cals := newCalendars(targets)
 
 	cals.updateCalendars()
+
+	for _, e := range cals.calendars {
+		mon.Events = e.calendar.Events()
+	}
 
 	return &mon, nil
 }
