@@ -41,10 +41,9 @@ var serveCmd = &cobra.Command{
 			fmt.Printf("error: icalendar target list of URLs is not valid: %v", err)
 		}
 
-		cals := calendar.NewCalendars(urls)
-
-		for _, c := range *cals {
-			fmt.Printf("%v", c.Calendar)
+		mon, err := calendar.NewMonitor(urls)
+		if err != nil {
+			fmt.Printf("Error loading calendar monitor: %v", mon)
 		}
 
 		http.Handle("/metrics", promhttp.Handler())
