@@ -25,7 +25,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kekscode/calendar-events-exporter/pkg/icalmetrics"
+	"github.com/kekscode/calendar-events-exporter/pkg/calendar"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 )
@@ -36,12 +36,17 @@ var serveCmd = &cobra.Command{
 	Short: "Serve starts the exporter serving metrics",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		url, err := cmd.Flags().GetString("icalendar-url")
+		urls, err := cmd.Flags().GetStringArray("icalendar-urls")
 		if err != nil {
-			fmt.Printf("error: icalendar target url not valid: %v", err)
+			fmt.Printf("error: icalendar target list of URLs is not valid: %v", err)
 		}
-		cal := icalmetrics.NewCalendarMetrics(url)
-		fmt.Print(cal)
+
+		cals := calendar.NewCalendars(urls)
+
+		for _, c := range *cals {
+			fmt.Printf("%v", c.Calendar)
+		}
+
 		http.Handle("/metrics", promhttp.Handler())
 		http.ListenAndServe(":9310", nil)
 	},
@@ -58,5 +63,5 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	serveCmd.Flags().StringP("icalendar-url", "u", "file:///calendar.ics", "Location of the iCalendar file to monitor")
+	serveCmd.Flags().StringArrayP("icalendar-urls", "u", []string{"file:///calendar.ics"}, "URL location of the ics file to monitor. This flag may be repeated for different targets.")
 }
