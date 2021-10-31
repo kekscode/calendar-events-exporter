@@ -1,10 +1,10 @@
 package calendar
 
 import (
-	"fmt"
 	"net/http"
 
 	ics "github.com/arran4/golang-ical"
+	log "github.com/sirupsen/logrus"
 )
 
 type calendars struct {
@@ -35,13 +35,13 @@ func (c *calendars) updateCalendars() error {
 	for _, target := range c.calendars {
 		resp, err := http.Get(target.URL)
 		if err != nil {
-			fmt.Println("cannot fetch calendar: ", err)
+			log.Println("cannot fetch calendar: ", err)
 		}
 		defer resp.Body.Close()
 
 		target.calendar, err = ics.ParseCalendar(resp.Body)
 		if err != nil {
-			fmt.Println("cannot parse calendar data: ", err)
+			log.Println("cannot parse calendar data: ", err)
 		}
 	}
 	return nil

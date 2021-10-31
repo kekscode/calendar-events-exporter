@@ -22,11 +22,11 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/kekscode/calendar-events-exporter/pkg/calendar"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -38,12 +38,17 @@ var serveCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		urls, err := cmd.Flags().GetStringArray("icalendar-urls")
 		if err != nil {
-			fmt.Printf("error: icalendar target list of URLs is not valid: %v", err)
+			log.Printf("error: icalendar target list of URLs is not valid: %v", err)
 		}
 
 		mon, err := calendar.NewMonitor(urls)
 		if err != nil {
-			fmt.Printf("Error loading calendar monitor: %v", mon)
+			log.Printf("Error loading calendar monitor: %v", mon)
+		}
+
+		for _, e := range mon.Events {
+			s, _ := e.GetStartAt()
+			log.Printf("%v\n", s)
 		}
 
 		http.Handle("/metrics", promhttp.Handler())

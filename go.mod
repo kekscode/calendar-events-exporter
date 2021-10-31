@@ -6,6 +6,7 @@ require (
 	github.com/arran4/golang-ical v0.0.0-20210825232153-efac1f4cb8ac
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/prometheus/client_golang v1.11.0
+	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 )
@@ -17,6 +18,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
