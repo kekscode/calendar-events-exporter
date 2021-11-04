@@ -1237,3 +1237,4 @@ URL;VALUE=URI:https://www.feiertage-deutschland.de/fronleichnam/
 SUMMARY:Fronleichnam (§)
 DTSTART;VALUE=DATE:20200611
 END:VEVENT
+END:VCALENDAR

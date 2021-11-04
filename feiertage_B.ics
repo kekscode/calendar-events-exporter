@@ -1,3 +1,7 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//https://www.feiertage-deutschland.de/kalender-download/
+CALSCALE:GREGORIAN
 BEGIN:VEVENT
 UID:9cafc0d7587db9d89b669d5450784d96@feiertage-oesterreich.at
 DTSTAMP:20211021T175157Z
