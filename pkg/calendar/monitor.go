@@ -6,9 +6,6 @@ import (
 	ics "github.com/arran4/golang-ical"
 )
 
-// What's that about?
-//kalender1,kalender2 <= prometheus_exporter:9310 => prometheus-metrics <= prometheus server (scrapen) <= Grafana WebUI (huebsche graphen)
-
 // TODO: Add a "high level" event(s) store object and
 // abstract away the ics.VEvents data structure
 
