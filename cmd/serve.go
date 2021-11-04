@@ -32,6 +32,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+/*
 var (
 	eventInfo = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "calendar_event_info",
@@ -45,6 +46,7 @@ func init() {
 	prometheus.MustRegister(eventInfo)
 	eventInfo.Set(1.0)
 }
+*/
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
@@ -76,7 +78,28 @@ var serveCmd = &cobra.Command{
 					for _, e := range store.Events[:1] {
 						log.Printf("%v\n", e)
 					}
+
+					// Extract this in to a function returning all updated metrics
+					var eventIds []prometheus.Gauge
+
+					for _, e := range store.Events {
+						eventIds = append(eventIds, prometheus.NewGauge(
+							prometheus.GaugeOpts{
+								Name:        "calendar_event_info",
+								Help:        "Info on a calendar event",
+								ConstLabels: prometheus.Labels{"uid": e.GetProperty("UID").IANAToken},
+							}))
+					}
+
+					// Register generated metrics
+					for _, e := range eventIds {
+						if err := prometheus.Register(e); err != nil {
+							log.Printf("Could not register metrics: %v\n", err)
+						}
+					}
+
 					log.Printf("Tick at", t)
+
 				}
 
 			}
