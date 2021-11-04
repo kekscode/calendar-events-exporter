@@ -17,14 +17,25 @@ type Monitor struct {
 	// (defer unlock beachten)
 	Events    []*ics.VEvent
 	Calendars calendars
+	targets   []string
 }
 
 // NewMonitor returns a new calendar monitor
 func NewMonitor(targets []string) (*Monitor, error) {
 
 	mon := Monitor{}
+	mon.targets = targets
 
-	cals := newCalendars(targets)
+	return &mon, nil
+}
+
+func (m *Monitor) Update() {
+	m.Calendars.updateCalendars()
+	m.updateEvents()
+}
+
+func (m *Monitor) updateEvents() {
+	cals := newCalendars(m.targets)
 	// FIXME: Not mockable
 	// Better: Inject a monitor object to NewMonitor() to make it testable
 	cals.updateCalendars()
@@ -32,14 +43,8 @@ func NewMonitor(targets []string) (*Monitor, error) {
 	// TODO: This must be part of the Update() or update() logic
 	for _, e := range cals.vevents {
 		fmt.Printf("%v", e.GetProperty("SUMMARY"))
-		mon.Events = append(mon.Events, e)
+		m.Events = append(m.Events, e)
 	}
 
-	mon.Calendars = *cals
-
-	return &mon, nil
-}
-
-func (m *Monitor) Update() {
-	m.Calendars.updateCalendars()
+	m.Calendars = *cals
 }
