@@ -6,10 +6,7 @@ import (
 	ics "github.com/arran4/golang-ical"
 )
 
-// TODO: Add a "high level" event(s) store object and
-// abstract away the ics.VEvents data structure
-
-type Monitor struct {
+type EventStore struct {
 	// TODO: Secure this with a Write MUTEX lock
 	// (defer unlock beachten)
 	Events    []*ics.VEvent
@@ -18,20 +15,20 @@ type Monitor struct {
 }
 
 // NewMonitor returns a new calendar monitor
-func NewMonitor(targets []string) (*Monitor, error) {
+func NewMonitor(targets []string) (*EventStore, error) {
 
-	mon := Monitor{}
+	mon := EventStore{}
 	mon.targets = targets
 
 	return &mon, nil
 }
 
-func (m *Monitor) Update() {
+func (m *EventStore) Update() {
 	m.Calendars.updateCalendars()
 	m.updateEvents()
 }
 
-func (m *Monitor) updateEvents() {
+func (m *EventStore) updateEvents() {
 	cals := newCalendars(m.targets)
 	// FIXME: Not mockable
 	// Better: Inject a monitor object to NewMonitor() to make it testable
