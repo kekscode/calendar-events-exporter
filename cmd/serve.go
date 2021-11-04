@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"time"
 
+	ics "github.com/arran4/golang-ical"
 	"github.com/kekscode/calendar-events-exporter/pkg/calendar"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -80,23 +81,34 @@ var serveCmd = &cobra.Command{
 					}
 
 					// Extract this in to a function returning all updated metrics
-					var eventIds []prometheus.Gauge
+					//var eventIds []prometheus.Gauge
 
-					for _, e := range store.Events {
-						eventIds = append(eventIds, prometheus.NewGauge(
+					if err := prometheus.Register(
+						prometheus.NewGauge(
 							prometheus.GaugeOpts{
 								Name:        "calendar_event_info",
 								Help:        "Info on a calendar event",
-								ConstLabels: prometheus.Labels{"uid": e.GetProperty("UID").IANAToken},
-							}))
+								ConstLabels: prometheus.Labels{"uid": store.Events[1].GetProperty(ics.ComponentPropertyUniqueId).Value},
+							}),
+					); err != nil {
+						log.Printf("Could not register metrics: %v\n", err)
 					}
 
-					// Register generated metrics
-					for _, e := range eventIds {
-						if err := prometheus.Register(e); err != nil {
-							log.Printf("Could not register metrics: %v\n", err)
-						}
-					}
+					//for _, e := range store.Events {
+					//	eventIds = append(eventIds, prometheus.NewGauge(
+					//		prometheus.GaugeOpts{
+					//			Name:        "calendar_event_info",
+					//			Help:        "Info on a calendar event",
+					//			ConstLabels: prometheus.Labels{"uid": e.GetProperty("UID").IANAToken},
+					//		}))
+					//}
+
+					//// Register generated metrics
+					//for _, e := range eventIds {
+					//	if err := prometheus.Register(e); err != nil {
+					//		log.Printf("Could not register metrics: %v\n", err)
+					//	}
+					//}
 
 					log.Printf("Tick at", t)
 
