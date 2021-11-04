@@ -39,6 +39,7 @@ func (m *Monitor) updateEvents() {
 	// FIXME: Not mockable
 	// Better: Inject a monitor object to NewMonitor() to make it testable
 	cals.updateCalendars()
+	m.Events = nil
 
 	for _, e := range cals.vevents {
 		fmt.Printf("%v", e.GetProperty("SUMMARY"))

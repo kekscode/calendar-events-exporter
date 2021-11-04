@@ -6,7 +6,7 @@ BEGIN:VEVENT
 UID:6f5bf4073a952c3ce732fe7ea600bef9@feiertage-oesterreich.at
 DTSTAMP:20211021T175157Z
 LOCATION:Alle Bundesländer
-DESCRIPTION:Der Y Neujahrstag ist in allen deutschen Bundesländern ein gesetzlicher Feiertag.
+DESCRIPTION:Der Neujahrstag ist in allen deutschen Bundesländern ein gesetzlicher Feiertag.
 URL;VALUE=URI:https://www.feiertage-deutschland.de/neujahr/
 SUMMARY:Neujahr (§)
 RRULE:FREQ=YEARLY
