@@ -26,10 +26,25 @@ import (
 	"time"
 
 	"github.com/kekscode/calendar-events-exporter/pkg/calendar"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
+
+var (
+	eventInfo = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: "calendar_event_info",
+		Help: "Info on a calendar event",
+	})
+)
+
+func init() {
+	// Expose and set to a fixed number
+	// See: https://www.robustperception.io/exposing-the-software-version-to-prometheus
+	prometheus.MustRegister(eventInfo)
+	eventInfo.Set(1.0)
+}
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
@@ -57,7 +72,7 @@ var serveCmd = &cobra.Command{
 					return
 				case t := <-ticker.C:
 					store.Update()
-					log.Printf("%v", store.Events)
+					//log.Printf("%v", store.Events)
 					for _, e := range store.Events[:1] {
 						log.Printf("%v\n", e)
 					}

@@ -1,8 +1,6 @@
 package calendar
 
 import (
-	"fmt"
-
 	ics "github.com/arran4/golang-ical"
 )
 
@@ -31,15 +29,9 @@ func (m *EventStore) Update() {
 
 func (m *EventStore) updateEvents() {
 	cals := newCalendars(m.targets)
-	// FIXME: Not mockable
-	// Better: Inject a monitor object to NewMonitor() to make it testable
 	cals.updateCalendars()
 	m.Events = nil
-
-	for _, e := range cals.vevents {
-		fmt.Printf("%v", e.GetProperty("SUMMARY"))
-		m.Events = append(m.Events, e)
-	}
+	m.Events = append(m.Events, cals.vevents...)
 
 	m.Calendars = *cals
 }

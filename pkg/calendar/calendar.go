@@ -45,6 +45,7 @@ func (c *calendars) updateCalendars() {
 
 		target.calendar, err = ics.ParseCalendar(resp.Body)
 		if err != nil {
+			// TODO: This panics if e.g. the calendar header is missing. Deal with this by skipping it.
 			log.Println("cannot parse calendar data: ", err)
 		}
 
