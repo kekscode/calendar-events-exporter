@@ -22,7 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -57,19 +56,14 @@ var serveCmd = &cobra.Command{
 				case <-done:
 					return
 				case t := <-ticker.C:
+					mon.Update()
 					log.Printf("%v", mon.Events)
-					for _, e := range mon.Events {
-						s, _ := e.GetStartAt()
-						sb, _ := e.GetAllDayStartAt()
+					for _, e := range mon.Events[:1] {
 						log.Printf("%v\n", e)
-						log.Printf("%v\n", s)
-						log.Printf("%v\n", sb)
 					}
-					fmt.Println("Tick at", t)
+					log.Printf("Tick at", t)
 				}
 
-				// time.Tick(time.Minute * 5)
-				//go mon.Update()
 			}
 		}()
 
