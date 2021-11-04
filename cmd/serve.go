@@ -86,9 +86,16 @@ var serveCmd = &cobra.Command{
 					if err := prometheus.Register(
 						prometheus.NewGauge(
 							prometheus.GaugeOpts{
-								Name:        "calendar_event_info",
-								Help:        "Info on a calendar event",
-								ConstLabels: prometheus.Labels{"uid": store.Events[1].GetProperty(ics.ComponentPropertyUniqueId).Value},
+								Name: "calendar_event_info",
+								Help: "Info on a calendar event",
+								ConstLabels: prometheus.Labels{
+									"uid":         store.Events[1].GetProperty(ics.ComponentPropertyUniqueId).Value,
+									"summary":     store.Events[1].GetProperty(ics.ComponentPropertySummary).Value,
+									"description": store.Events[1].GetProperty(ics.ComponentPropertyDescription).Value,
+									"location":    store.Events[1].GetProperty(ics.ComponentPropertyLocation).Value,
+									//"dstart":      store.Events[1].GetProperty(ics.ComponentPropertyDtStart).Value,
+									//"dend": store.Events[1].GetProperty(ics.ComponentPropertyDtEnd).Value,
+								},
 							}),
 					); err != nil {
 						log.Printf("Could not register metrics: %v\n", err)
