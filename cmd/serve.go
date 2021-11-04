@@ -42,9 +42,9 @@ var serveCmd = &cobra.Command{
 			log.Printf("error: icalendar target list of URLs is not valid: %v", err)
 		}
 
-		mon, err := calendar.NewMonitor(urls)
+		store, err := calendar.NewEventStore(urls)
 		if err != nil {
-			log.Printf("Error loading calendar monitor: %v", mon)
+			log.Printf("Error loading calendar monitor: %v", store)
 		}
 
 		// Main loop
@@ -56,9 +56,9 @@ var serveCmd = &cobra.Command{
 				case <-done:
 					return
 				case t := <-ticker.C:
-					mon.Update()
-					log.Printf("%v", mon.Events)
-					for _, e := range mon.Events[:1] {
+					store.Update()
+					log.Printf("%v", store.Events)
+					for _, e := range store.Events[:1] {
 						log.Printf("%v\n", e)
 					}
 					log.Printf("Tick at", t)

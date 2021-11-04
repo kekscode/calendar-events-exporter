@@ -6,6 +6,7 @@ import (
 	ics "github.com/arran4/golang-ical"
 )
 
+// EventStore stores calendar events
 type EventStore struct {
 	// TODO: Secure this with a Write MUTEX lock
 	// (defer unlock beachten)
@@ -15,7 +16,7 @@ type EventStore struct {
 }
 
 // NewMonitor returns a new calendar monitor
-func NewMonitor(targets []string) (*EventStore, error) {
+func NewEventStore(targets []string) (*EventStore, error) {
 
 	mon := EventStore{}
 	mon.targets = targets
