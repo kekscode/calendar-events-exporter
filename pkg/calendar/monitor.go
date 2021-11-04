@@ -40,7 +40,6 @@ func (m *Monitor) updateEvents() {
 	// Better: Inject a monitor object to NewMonitor() to make it testable
 	cals.updateCalendars()
 
-	// TODO: This must be part of the Update() or update() logic
 	for _, e := range cals.vevents {
 		fmt.Printf("%v", e.GetProperty("SUMMARY"))
 		m.Events = append(m.Events, e)
