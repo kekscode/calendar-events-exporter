@@ -22,7 +22,9 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/kekscode/calendar-events-exporter/pkg/calendar"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -46,18 +48,35 @@ var serveCmd = &cobra.Command{
 			log.Printf("Error loading calendar monitor: %v", mon)
 		}
 
-		log.Printf("%v", mon.Events)
+		// Main loop
+		ticker := time.NewTicker(2 * time.Second)
+		done := make(chan bool)
+		go func() {
+			for {
+				select {
+				case <-done:
+					return
+				case t := <-ticker.C:
+					log.Printf("%v", mon.Events)
+					for _, e := range mon.Events {
+						s, _ := e.GetStartAt()
+						sb, _ := e.GetAllDayStartAt()
+						log.Printf("%v\n", e)
+						log.Printf("%v\n", s)
+						log.Printf("%v\n", sb)
+					}
+					fmt.Println("Tick at", t)
+				}
 
-		for _, e := range mon.Events {
-			s, _ := e.GetStartAt()
-			sb, _ := e.GetAllDayStartAt()
-			log.Printf("%v\n", e)
-			log.Printf("%v\n", s)
-			log.Printf("%v\n", sb)
-		}
+				// time.Tick(time.Minute * 5)
+				//go mon.Update()
+			}
+		}()
 
 		http.Handle("/metrics", promhttp.Handler())
 		http.ListenAndServe(":9310", nil)
+
+		done <- true
 	},
 }
 

@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// TODO: Find a better naming for calendars/calendar and monitor
 type calendars struct {
 	calendars []calendar
 	vevents   []*ics.VEvent

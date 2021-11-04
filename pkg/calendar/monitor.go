@@ -6,8 +6,17 @@ import (
 	ics "github.com/arran4/golang-ical"
 )
 
+// What's that about?
+//kalender1,kalender2 <= prometheus_exporter:9310 => prometheus-metrics <= prometheus server (scrapen) <= Grafana WebUI (huebsche graphen)
+
+// TODO: Add a "high level" event(s) store object and
+// abstract away the ics.VEvents data structure
+
 type Monitor struct {
-	Events []*ics.VEvent
+	// TODO: Secure this with a Write MUTEX lock
+	// (defer unlock beachten)
+	Events    []*ics.VEvent
+	Calendars calendars
 }
 
 // NewMonitor returns a new calendar monitor
@@ -16,12 +25,21 @@ func NewMonitor(targets []string) (*Monitor, error) {
 	mon := Monitor{}
 
 	cals := newCalendars(targets)
+	// FIXME: Not mockable
+	// Better: Inject a monitor object to NewMonitor() to make it testable
 	cals.updateCalendars()
 
+	// TODO: This must be part of the Update() or update() logic
 	for _, e := range cals.vevents {
 		fmt.Printf("%v", e.GetProperty("SUMMARY"))
 		mon.Events = append(mon.Events, e)
 	}
 
+	mon.Calendars = *cals
+
 	return &mon, nil
+}
+
+func (m *Monitor) Update() {
+	m.Calendars.updateCalendars()
 }
