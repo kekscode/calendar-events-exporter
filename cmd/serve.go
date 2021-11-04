@@ -93,7 +93,7 @@ var serveCmd = &cobra.Command{
 									"summary":     store.Events[1].GetProperty(ics.ComponentPropertySummary).Value,
 									"description": store.Events[1].GetProperty(ics.ComponentPropertyDescription).Value,
 									"location":    store.Events[1].GetProperty(ics.ComponentPropertyLocation).Value,
-									//"dstart":      store.Events[1].GetProperty(ics.ComponentPropertyDtStart).Value,
+									"dstart":      store.Events[1].GetProperty(ics.ComponentPropertyDtStart).Value,
 									//"dend": store.Events[1].GetProperty(ics.ComponentPropertyDtEnd).Value,
 								},
 							}),
