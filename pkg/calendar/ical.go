@@ -3,8 +3,8 @@ package calendar
 import (
 	"net/http"
 	"sync"
-	"time"
 
+	"github.com/araddon/dateparse"
 	ics "github.com/arran4/golang-ical"
 	log "github.com/sirupsen/logrus"
 )
@@ -47,16 +47,17 @@ func newICSEventStore(targets []string) (*ICSEventStore, error) {
 }
 
 func (m *ICSEventStore) GetEvents() []Event {
-	evts := []Event{}
 	iCalEvts := m.getEvents()
+	evts := []Event{}
 	for _, iCalEvt := range iCalEvts {
 
-		startTime, err := time.Parse("20210021T175157Z", iCalEvt.GetProperty(ics.ComponentPropertyDtStart).Value)
+		startTime, err := dateparse.ParseAny(iCalEvt.GetProperty(ics.ComponentPropertyDtStart).Value)
 		if err != nil {
 			log.Errorf("error: %v", err)
 		}
 
-		endTime, err := time.Parse("20210021T175157Z", iCalEvt.GetProperty(ics.ComponentPropertyDtEnd).Value)
+		// FIXME: Something's wrong here (panics):
+		endTime, err := dateparse.ParseAny(iCalEvt.GetProperty(ics.ComponentPropertyDtEnd).Value)
 		if err != nil {
 			log.Errorf("error: %v", err)
 		}
