@@ -11,6 +11,8 @@ type EventStore interface {
 	GetEvents() []Event
 }
 
+type IcalStore struct{}
+
 type Event struct {
 	Summary     string
 	Description string
@@ -21,17 +23,21 @@ type Event struct {
 }
 
 // Returns a new event store of a given type
-func NewEventStore(storeType string, targets []string) (*EventStore, error) {
+func NewEventStore(storeType string, targets []string) (EventStore, error) {
+
 	switch storeType {
 	case "ical":
-		store, err := newICalEventStore(targets)
-		return store, err
+		icsStore, err := newICalEventStore(targets)
+		icsStore.Update()
+
+		store := IcalStore{}
+		return &store, err
 	}
 	return nil, errors.New("unknown store type")
 }
 
-func Update(st *EventStore) {
-}
-func GetEvents(st *EventStore) []Event {
+func Update(st *IcalStore) {}
+
+func GetEvents(st *IcalStore) []Event {
 	return nil
 }
