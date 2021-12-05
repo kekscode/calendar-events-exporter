@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/kekscode/calendar-events-exporter/pkg/calendar"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -54,28 +53,28 @@ var serveCmd = &cobra.Command{
 				case t := <-ticker.C:
 					store.Update()
 					for _, e := range store.GetEvents() {
-						log.Printf("%v\n", e)
+						log.Printf("%v+\n", e)
 					}
 
 					// Extract this in to a function returning all updated metrics
 					//var eventIds []prometheus.Gauge
-					if err := prometheus.Register(
-						prometheus.NewGauge(
-							prometheus.GaugeOpts{
-								Name:        "calendar_event_info",
-								Help:        "Info on a calendar event",
-								ConstLabels: prometheus.Labels{
-									//"uid":         store.Events[1].GetProperty(ics.ComponentPropertyUniqueId).Value,
-									//"summary":     store.Events[1].GetProperty(ics.ComponentPropertySummary).Value,
-									//"description": store.Events[1].GetProperty(ics.ComponentPropertyDescription).Value,
-									//"location":    store.Events[1].GetProperty(ics.ComponentPropertyLocation).Value,
-									//"dstart":      store.Events[1].GetProperty(ics.ComponentPropertyDtStart).Value,
-									//"dend": store.Events[1].GetProperty(ics.ComponentPropertyDtEnd).Value,
-								},
-							}),
-					); err != nil {
-						log.Printf("Could not register metrics: %v\n", err)
-					}
+					//					if err := prometheus.Register(
+					//						prometheus.NewGauge(
+					//							prometheus.GaugeOpts{
+					//								Name:        "calendar_event_info",
+					//								Help:        "Info on a calendar event",
+					//								ConstLabels: prometheus.Labels{
+					//									//"uid":         store.Events[1].GetProperty(ics.ComponentPropertyUniqueId).Value,
+					//									//"summary":     store.Events[1].GetProperty(ics.ComponentPropertySummary).Value,
+					//									//"description": store.Events[1].GetProperty(ics.ComponentPropertyDescription).Value,
+					//									//"location":    store.Events[1].GetProperty(ics.ComponentPropertyLocation).Value,
+					//									//"dstart":      store.Events[1].GetProperty(ics.ComponentPropertyDtStart).Value,
+					//									//"dend": store.Events[1].GetProperty(ics.ComponentPropertyDtEnd).Value,
+					//								},
+					//							}),
+					//					); err != nil {
+					//						log.Printf("Could not register metrics: %v\n", err)
+					//					}
 
 					//for _, e := range store.Events {
 					//	eventIds = append(eventIds, prometheus.NewGauge(

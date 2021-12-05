@@ -45,15 +45,15 @@ func newICSEventStore(targets []string) (*ICSEventStore, error) {
 	return &ical, nil
 }
 
-func (m *ICSEventStore) GetEvents() *[]Event {
+func (m *ICSEventStore) GetEvents() []Event {
 	evts := []Event{}
 	iCalEvts := m.getEvents()
 	for _, iCalEvt := range iCalEvts {
 		evts = append(evts, Event{
-			Summary: iCalEvt.GetProperty(ics.ComponentPropertyUniqueId).Value,
+			Summary:  iCalEvt.GetProperty(ics.ComponentPropertyUniqueId).Value,
+			Location: iCalEvt.GetProperty(ics.ComponentPropertyLocation).Value,
 
 			//TODO:
-			//Location: iCalEvt.Location,
 			//Start:    iCalEvt.Start.Time,
 			//End:      iCalEvt.End.Time,
 			//"uid":         store.Events[1].GetProperty(ics.ComponentPropertyUniqueId).Value,
@@ -65,7 +65,7 @@ func (m *ICSEventStore) GetEvents() *[]Event {
 		})
 	}
 
-	return &evts
+	return evts
 }
 
 func (m *ICSEventStore) getEvents() []*ics.VEvent {

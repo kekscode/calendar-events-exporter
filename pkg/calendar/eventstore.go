@@ -21,15 +21,16 @@ type Event struct {
 }
 
 // Returns a new event store of a given type
-func NewEventStore(storeType string, targets []string) (EventStore, error) {
+func NewEventStore(storeType string, targets []string) (*ICSEventStore, error) {
 
 	switch storeType {
 	case "ical":
-		icsStore, err := newICSEventStore(targets)
-		icsStore.Update()
+		s, err := newICSEventStore(targets)
+		return s, err
+		//icsStore, err := newICSEventStore(targets)
+		//icsStore.Update()
 
-		store := IcalStore{}
-		return &store, err
+		//return &icsStore, err
 	}
 	return nil, errors.New("unknown store type")
 }
