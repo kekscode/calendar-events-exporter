@@ -36,8 +36,8 @@ func NewEventStore(storeType string, targets []string) (EventStore, error) {
 	return nil, errors.New("unknown store type")
 }
 
-func Update(st *IcalStore) {}
+func (st *IcalStore) Update() {}
 
-func GetEvents(st *IcalStore) []Event {
+func (st *IcalStore) GetEvents() []Event {
 	return nil
 }
