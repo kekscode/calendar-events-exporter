@@ -53,7 +53,7 @@ var serveCmd = &cobra.Command{
 					return
 				case t := <-ticker.C:
 					store.Update()
-					for _, e := range store.GetEvents()[:1] {
+					for _, e := range store.GetEvents() {
 						log.Printf("%v\n", e)
 					}
 

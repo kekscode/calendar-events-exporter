@@ -8,6 +8,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type IcalStore struct{}
+
+func (st *IcalStore) Update() {}
+
+func (st *IcalStore) GetEvents() []Event {
+	return nil
+}
+
 type calendars struct {
 	calendars []calendar
 	vevents   []*ics.VEvent
