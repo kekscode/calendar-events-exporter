@@ -25,7 +25,6 @@ import (
 	"net/http"
 	"time"
 
-	ics "github.com/arran4/golang-ical"
 	"github.com/kekscode/calendar-events-exporter/pkg/calendar"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -60,7 +59,7 @@ var serveCmd = &cobra.Command{
 			log.Printf("error: icalendar target list of URLs is not valid: %v", err)
 		}
 
-		store, err := calendar.NewEventStore(urls)
+		store, err := calendar.NewEventStore("ical", urls)
 		if err != nil {
 			log.Printf("Error loading calendar monitor: %v", store)
 		}
@@ -75,25 +74,23 @@ var serveCmd = &cobra.Command{
 					return
 				case t := <-ticker.C:
 					store.Update()
-					//log.Printf("%v", store.Events)
-					for _, e := range store.Events[:1] {
+					for _, e := range store.GetEvents()[:1] {
 						log.Printf("%v\n", e)
 					}
 
 					// Extract this in to a function returning all updated metrics
 					//var eventIds []prometheus.Gauge
-
 					if err := prometheus.Register(
 						prometheus.NewGauge(
 							prometheus.GaugeOpts{
-								Name: "calendar_event_info",
-								Help: "Info on a calendar event",
+								Name:        "calendar_event_info",
+								Help:        "Info on a calendar event",
 								ConstLabels: prometheus.Labels{
-									"uid":         store.Events[1].GetProperty(ics.ComponentPropertyUniqueId).Value,
-									"summary":     store.Events[1].GetProperty(ics.ComponentPropertySummary).Value,
-									"description": store.Events[1].GetProperty(ics.ComponentPropertyDescription).Value,
-									"location":    store.Events[1].GetProperty(ics.ComponentPropertyLocation).Value,
-									"dstart":      store.Events[1].GetProperty(ics.ComponentPropertyDtStart).Value,
+									//"uid":         store.Events[1].GetProperty(ics.ComponentPropertyUniqueId).Value,
+									//"summary":     store.Events[1].GetProperty(ics.ComponentPropertySummary).Value,
+									//"description": store.Events[1].GetProperty(ics.ComponentPropertyDescription).Value,
+									//"location":    store.Events[1].GetProperty(ics.ComponentPropertyLocation).Value,
+									//"dstart":      store.Events[1].GetProperty(ics.ComponentPropertyDtStart).Value,
 									//"dend": store.Events[1].GetProperty(ics.ComponentPropertyDtEnd).Value,
 								},
 							}),

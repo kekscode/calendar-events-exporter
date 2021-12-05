@@ -1,37 +1,37 @@
 package calendar
 
 import (
-	ics "github.com/arran4/golang-ical"
+	"errors"
+	"time"
 )
 
-// EventStore stores calendar events
-type EventStore struct {
-	// TODO: Secure this with a Write MUTEX lock
-	// (defer unlock beachten)
-	Events    []*ics.VEvent
-	Calendars calendars
-	targets   []string
+// Generic store for calendar events
+type EventStore interface {
+	Update()
+	GetEvents() []Event
 }
 
-// NewMonitor returns a new calendar monitor
-func NewEventStore(targets []string) (*EventStore, error) {
-
-	mon := EventStore{}
-	mon.targets = targets
-
-	return &mon, nil
+type Event struct {
+	Summary     string
+	Description string
+	Location    string
+	StartTime   time.Time
+	EndTime     time.Time
+	ID          string
 }
 
-func (m *EventStore) Update() {
-	m.Calendars.updateCalendars()
-	m.updateEvents()
+// Returns a new event store of a given type
+func NewEventStore(storeType string, targets []string) (*EventStore, error) {
+	switch storeType {
+	case "ical":
+		store, err := newICalEventStore(targets)
+		return store, err
+	}
+	return nil, errors.New("unknown store type")
 }
 
-func (m *EventStore) updateEvents() {
-	cals := newCalendars(m.targets)
-	cals.updateCalendars()
-	m.Events = nil
-	m.Events = append(m.Events, cals.vevents...)
-
-	m.Calendars = *cals
+func Update(st *EventStore) {
+}
+func GetEvents(st *EventStore) []Event {
+	return nil
 }
