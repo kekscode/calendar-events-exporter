@@ -46,7 +46,7 @@ var serveCmd = &cobra.Command{
 		// Main loop
 		ticker := time.NewTicker(2 * time.Second)
 		done := make(chan bool)
-		go func(store *calendar.EventStore) {
+		go func() {
 			for {
 				select {
 				case <-done:
@@ -98,7 +98,7 @@ var serveCmd = &cobra.Command{
 				}
 
 			}
-		}(store)
+		}()
 
 		http.Handle("/metrics", promhttp.Handler())
 		http.ListenAndServe(":9310", nil)

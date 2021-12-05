@@ -18,18 +18,18 @@ type calendar struct {
 	calendar *ics.Calendar
 }
 
-// ICalEventStore stores calendar events
-type ICalEventStore struct {
+// ICSEventStore stores calendar events
+type ICSEventStore struct {
 	sync.RWMutex
 	Events    []*ics.VEvent
 	Calendars calendars
 	targets   []string
 }
 
-// newICalEventStore returns a new ical calendar event store
-func newICalEventStore(targets []string) (*ICalEventStore, error) {
+// newICSEventStore returns a new ical calendar event store
+func newICSEventStore(targets []string) (*ICSEventStore, error) {
 
-	ical := ICalEventStore{}
+	ical := ICSEventStore{}
 	ical.targets = targets
 
 	ical.Update()
@@ -37,7 +37,7 @@ func newICalEventStore(targets []string) (*ICalEventStore, error) {
 	return &ical, nil
 }
 
-func (m *ICalEventStore) GetEvents() *[]Event {
+func (m *ICSEventStore) GetEvents() *[]Event {
 	evts := []Event{}
 	iCalEvts := m.getEvents()
 	for _, iCalEvt := range iCalEvts {
@@ -60,14 +60,14 @@ func (m *ICalEventStore) GetEvents() *[]Event {
 	return &evts
 }
 
-func (m *ICalEventStore) getEvents() []*ics.VEvent {
+func (m *ICSEventStore) getEvents() []*ics.VEvent {
 	m.RLock()
 	defer m.RUnlock()
 	return m.Events
 }
 
 // Updates calendar events in the store
-func (m *ICalEventStore) Update() {
+func (m *ICSEventStore) Update() {
 	m.Lock()
 	defer m.Unlock()
 
@@ -75,7 +75,7 @@ func (m *ICalEventStore) Update() {
 	m.updateEvents()
 }
 
-func (m *ICalEventStore) updateEvents() {
+func (m *ICSEventStore) updateEvents() {
 	cals := newCalendars(m.targets)
 	cals.updateCalendars()
 	m.Events = nil

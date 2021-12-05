@@ -27,7 +27,7 @@ func NewEventStore(storeType string, targets []string) (EventStore, error) {
 
 	switch storeType {
 	case "ical":
-		icsStore, err := newICalEventStore(targets)
+		icsStore, err := newICSEventStore(targets)
 		icsStore.Update()
 
 		store := IcalStore{}
