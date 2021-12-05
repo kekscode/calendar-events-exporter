@@ -12,12 +12,12 @@ type EventStore interface {
 }
 
 type Event struct {
-	Summary     string
-	Description string
+	ID          string
 	Location    string
+	Description string
+	Summary     string
 	StartTime   time.Time
 	EndTime     time.Time
-	ID          string
 }
 
 // Returns a new event store of a given type

@@ -3,6 +3,7 @@ package calendar
 import (
 	"net/http"
 	"sync"
+	"time"
 
 	ics "github.com/arran4/golang-ical"
 	log "github.com/sirupsen/logrus"
@@ -49,19 +50,24 @@ func (m *ICSEventStore) GetEvents() []Event {
 	evts := []Event{}
 	iCalEvts := m.getEvents()
 	for _, iCalEvt := range iCalEvts {
-		evts = append(evts, Event{
-			Summary:  iCalEvt.GetProperty(ics.ComponentPropertyUniqueId).Value,
-			Location: iCalEvt.GetProperty(ics.ComponentPropertyLocation).Value,
 
-			//TODO:
-			//Start:    iCalEvt.Start.Time,
-			//End:      iCalEvt.End.Time,
-			//"uid":         store.Events[1].GetProperty(ics.ComponentPropertyUniqueId).Value,
-			//"summary":     store.Events[1].GetProperty(ics.ComponentPropertySummary).Value,
-			//"description": store.Events[1].GetProperty(ics.ComponentPropertyDescription).Value,
-			//"location":    store.Events[1].GetProperty(ics.ComponentPropertyLocation).Value,
-			//"dstart":      store.Events[1].GetProperty(ics.ComponentPropertyDtStart).Value,
-			//"dend": store.Events[1].GetProperty(ics.ComponentPropertyDtEnd).Value,
+		startTime, err := time.Parse("20210021T175157Z", iCalEvt.GetProperty(ics.ComponentPropertyDtStart).Value)
+		if err != nil {
+			log.Errorf("error: %v", err)
+		}
+
+		endTime, err := time.Parse("20210021T175157Z", iCalEvt.GetProperty(ics.ComponentPropertyDtEnd).Value)
+		if err != nil {
+			log.Errorf("error: %v", err)
+		}
+
+		evts = append(evts, Event{
+			ID:          iCalEvt.GetProperty(ics.ComponentPropertyUniqueId).Value,
+			Location:    iCalEvt.GetProperty(ics.ComponentPropertyLocation).Value,
+			Summary:     iCalEvt.GetProperty(ics.ComponentPropertySummary).Value,
+			Description: iCalEvt.GetProperty(ics.ComponentPropertyDescription).Value,
+			StartTime:   startTime,
+			EndTime:     endTime,
 		})
 	}
 
