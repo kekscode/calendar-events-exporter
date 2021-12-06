@@ -55,14 +55,14 @@ func (m *ICSEventStore) GetEvents() []Event {
 
 		var startTime, endTime time.Time
 
-		if iCalEvt.GetProperty(ics.ComponentPropertyDtStart).Value != "" {
+		if iCalEvt.GetProperty(ics.ComponentPropertyDtStart) != nil {
 			startTime, err := dateparse.ParseAny(iCalEvt.GetProperty(ics.ComponentPropertyDtStart).Value)
 			if err != nil {
 				log.Errorf("error with startTime: %v: %v", startTime, err)
 			}
 		}
 
-		if iCalEvt.GetProperty(ics.ComponentPropertyDtEnd).Value != "" {
+		if iCalEvt.GetProperty(ics.ComponentPropertyDtEnd) != nil {
 			endTime, err := dateparse.ParseAny(iCalEvt.GetProperty(ics.ComponentPropertyDtEnd).Value)
 			if err != nil {
 				log.Errorf("error with endTime: %v: %v", endTime, err)
@@ -131,7 +131,7 @@ func (c *calendars) updateCalendars() {
 		}
 		defer resp.Body.Close()
 
-		if resp == nil{
+		if resp == nil {
 			log.Println("response is NIL!!!")
 		}
 
