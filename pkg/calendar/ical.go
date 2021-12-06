@@ -3,6 +3,7 @@ package calendar
 import (
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/araddon/dateparse"
 	ics "github.com/arran4/golang-ical"
@@ -49,17 +50,23 @@ func newICSEventStore(targets []string) (*ICSEventStore, error) {
 func (m *ICSEventStore) GetEvents() []Event {
 	iCalEvts := m.getEvents()
 	evts := []Event{}
+
 	for _, iCalEvt := range iCalEvts {
 
-		startTime, err := dateparse.ParseAny(iCalEvt.GetProperty(ics.ComponentPropertyDtStart).Value)
-		if err != nil {
-			log.Errorf("error: %v", err)
+		var startTime, endTime time.Time
+
+		if iCalEvt.GetProperty(ics.ComponentPropertyDtStart).Value != "" {
+			startTime, err := dateparse.ParseAny(iCalEvt.GetProperty(ics.ComponentPropertyDtStart).Value)
+			if err != nil {
+				log.Errorf("error with startTime: %v: %v", startTime, err)
+			}
 		}
 
-		// FIXME: Something's wrong here (panics):
-		endTime, err := dateparse.ParseAny(iCalEvt.GetProperty(ics.ComponentPropertyDtEnd).Value)
-		if err != nil {
-			log.Errorf("error: %v", err)
+		if iCalEvt.GetProperty(ics.ComponentPropertyDtEnd).Value != "" {
+			endTime, err := dateparse.ParseAny(iCalEvt.GetProperty(ics.ComponentPropertyDtEnd).Value)
+			if err != nil {
+				log.Errorf("error with endTime: %v: %v", endTime, err)
+			}
 		}
 
 		evts = append(evts, Event{
@@ -123,6 +130,10 @@ func (c *calendars) updateCalendars() {
 			log.Println("cannot fetch calendar: ", err)
 		}
 		defer resp.Body.Close()
+
+		if resp == nil{
+			log.Println("response is NIL!!!")
+		}
 
 		target.calendar, err = ics.ParseCalendar(resp.Body)
 		if err != nil {

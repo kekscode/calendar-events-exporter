@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/kekscode/calendar-events-exporter/pkg/calendar"
@@ -35,6 +36,11 @@ var serveCmd = &cobra.Command{
 		urls, err := cmd.Flags().GetStringArray("icalendar-urls")
 		if err != nil {
 			log.Printf("error: icalendar target list of URLs is not valid: %v", err)
+		}
+
+		// Trim whitespaces
+		for i := range urls {
+			urls[i] = strings.TrimSpace(urls[i])
 		}
 
 		store, err := calendar.NewEventStore("ical", urls)
