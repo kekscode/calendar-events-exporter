@@ -1,15 +1,11 @@
 package calendar
 
 import (
-	"errors"
+	"fmt"
 	"time"
-)
 
-// Generic store for calendar events
-type EventStore interface {
-	Update()
-	GetEvents() []Event
-}
+	"github.com/kekscode/calendar-events-exporter/pkg/calendar/icalendar"
+)
 
 type Event struct {
 	ID          string
@@ -20,17 +16,19 @@ type Event struct {
 	EndTime     time.Time
 }
 
+// Generic store for calendar events
+type EventStore interface {
+	Update()
+	Events() []Event
+}
+
 // Returns a new event store of a given type
-func NewEventStore(storeType string, targets []string) (*ICSEventStore, error) {
+func NewEventStore(storeType string, targets []string) (EventStore, error) {
 
 	switch storeType {
 	case "ical":
-		s, err := newICSEventStore(targets)
+		s, err := icalendar.NewEventStore(targets)
 		return s, err
-		//icsStore, err := newICSEventStore(targets)
-		//icsStore.Update()
-
-		//return &icsStore, err
 	}
-	return nil, errors.New("unknown store type")
+	return nil, fmt.Errorf("unknown store type \"%v\"", storeType)
 }

@@ -1,4 +1,4 @@
-package calendar
+package icalendar
 
 import (
 	"net/http"
@@ -10,12 +10,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type IcalStore struct{}
-
-func (st *IcalStore) Update() {}
-
-func (st *IcalStore) GetEvents() []Event {
-	return nil
+type Event struct {
+	ID          string
+	Location    string
+	Description string
+	Summary     string
+	StartTime   time.Time
+	EndTime     time.Time
 }
 
 type calendars struct {
@@ -31,13 +32,13 @@ type calendar struct {
 // ICSEventStore stores calendar events
 type ICSEventStore struct {
 	sync.RWMutex
-	Events    []*ics.VEvent
+	VEvents   []*ics.VEvent
 	Calendars calendars
 	targets   []string
 }
 
 // newICSEventStore returns a new ical calendar event store
-func newICSEventStore(targets []string) (*ICSEventStore, error) {
+func NewEventStore(targets []string) (*ICSEventStore, error) {
 
 	ical := ICSEventStore{}
 	ical.targets = targets
@@ -47,8 +48,8 @@ func newICSEventStore(targets []string) (*ICSEventStore, error) {
 	return &ical, nil
 }
 
-func (m *ICSEventStore) GetEvents() []Event {
-	iCalEvts := m.getEvents()
+func (m *ICSEventStore) Events() []Event {
+	iCalEvts := m.events()
 	evts := []Event{}
 
 	for _, iCalEvt := range iCalEvts {
@@ -82,10 +83,10 @@ func (m *ICSEventStore) GetEvents() []Event {
 	return evts
 }
 
-func (m *ICSEventStore) getEvents() []*ics.VEvent {
+func (m *ICSEventStore) events() []*ics.VEvent {
 	m.RLock()
 	defer m.RUnlock()
-	return m.Events
+	return m.VEvents
 }
 
 // Updates calendar events in the store
@@ -100,8 +101,8 @@ func (m *ICSEventStore) Update() {
 func (m *ICSEventStore) updateEvents() {
 	cals := newCalendars(m.targets)
 	cals.updateCalendars()
-	m.Events = nil
-	m.Events = append(m.Events, cals.vevents...)
+	m.VEvents = nil
+	m.VEvents = append(m.VEvents, cals.vevents...)
 
 	m.Calendars = *cals
 }
