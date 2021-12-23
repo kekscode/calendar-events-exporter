@@ -1,4 +1,4 @@
-package icalendar
+package calendar
 
 import (
 	"net/http"
@@ -9,15 +9,6 @@ import (
 	ics "github.com/arran4/golang-ical"
 	log "github.com/sirupsen/logrus"
 )
-
-type Event struct {
-	ID          string
-	Location    string
-	Description string
-	Summary     string
-	StartTime   time.Time
-	EndTime     time.Time
-}
 
 type calendars struct {
 	calendars []calendar
@@ -38,8 +29,7 @@ type ICSEventStore struct {
 }
 
 // newICSEventStore returns a new ical calendar event store
-func NewEventStore(targets []string) (*ICSEventStore, error) {
-
+func NewICSEventStore(targets []string) (*ICSEventStore, error) {
 	ical := ICSEventStore{}
 	ical.targets = targets
 
