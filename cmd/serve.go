@@ -42,18 +42,27 @@ var serveCmd = &cobra.Command{
 				select {
 				case <-done:
 					return
-				case t := <-ticker.C:
-					// TODO: Add metrics for the number of events in the store
+				case <-ticker.C:
 					// TODO: Add metrics for calendar sources
 					// TODO: Add metrics for event duration in minutes
 
-					// Update the store
+					// Update the event store
 					store.Update()
 
-					// Upsert metrics to prometheus
+					// Update metric for total number of events in store
+					var calendarEventstoreEventsTotal = prometheus.NewGauge(
+						prometheus.GaugeOpts{
+							Name: "calendar_eventstore_events_total",
+							Help: "Total number of events in the calendar event store",
+						},
+					)
+					calendarEventstoreEventsTotal.Set(float64(len(store.Events())))
+					prometheus.Register(calendarEventstoreEventsTotal)
+
+					// Add events
 					for _, e := range store.Events() {
 						// Create metric for event
-						var evt = prometheus.NewGauge(
+						var calendarEventInfo = prometheus.NewGauge(
 							prometheus.GaugeOpts{
 								Name: "calendar_event_info",
 								Help: "Info on a calendar event",
@@ -64,16 +73,13 @@ var serveCmd = &cobra.Command{
 									"location":    e.Location,
 									"time_start":  e.StartTime.String(),
 									"time_end":    e.EndTime.String(),
-									"updated":     t.String(),
 								},
 							},
 						)
 						// Set metric to 1 like recommended for software versions:
 						// https://www.robustperception.io/exposing-the-software-version-to-prometheus
-						evt.Set(1.0)
-
-						// Register metric
-						prometheus.Register(evt)
+						calendarEventInfo.Set(1.0)
+						prometheus.Register(calendarEventInfo)
 					}
 				}
 			}
