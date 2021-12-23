@@ -28,7 +28,7 @@ type ICSEventStore struct {
 	targets   []string
 }
 
-// newICSEventStore returns a new ical calendar event store
+// NewICSEventStore returns a new ical calendar event store
 func NewICSEventStore(targets []string) (*ICSEventStore, error) {
 	ical := ICSEventStore{}
 	ical.targets = targets
@@ -38,6 +38,7 @@ func NewICSEventStore(targets []string) (*ICSEventStore, error) {
 	return &ical, nil
 }
 
+// Events returns a list of Events
 func (m *ICSEventStore) Events() []Event {
 	iCalEvts := m.events()
 	evts := []Event{}
@@ -113,25 +114,26 @@ func newCalendars(targets []string) *calendars {
 
 // updateCalendars updates the Calendars struct with the latest content from the targets
 func (c *calendars) updateCalendars() {
-	var vevents []*ics.VEvent
-
 	for _, target := range c.calendars {
-		resp, err := http.Get(target.URL)
+		vevents := []*ics.VEvent{}
+		client := http.DefaultClient
+
+		resp, err := client.Get(target.URL)
 		if err != nil {
-			log.Println("cannot fetch calendar: ", err)
-		}
-		defer resp.Body.Close()
-
-		if resp == nil {
-			log.Println("response is NIL!!!")
+			log.Error("cannot fetch calendar: ", err)
+			defer resp.Body.Close()
+			break
 		}
 
-		target.calendar, err = ics.ParseCalendar(resp.Body)
-		if err != nil {
-			// TODO: This panics if e.g. the calendar header is missing. Deal with this by skipping it.
-			log.Println("cannot parse calendar data: ", err)
+		if resp.Body != nil {
+			target.calendar, err = ics.ParseCalendar(resp.Body)
+			if err != nil {
+				log.Error("cannot parse calendar data: ", err)
+				break
+			}
+
+			c.vevents = append(vevents, target.calendar.Events()...)
 		}
 
-		c.vevents = append(vevents, target.calendar.Events()...)
 	}
 }
