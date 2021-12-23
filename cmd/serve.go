@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/kekscode/calendar-events-exporter/pkg/calendar"
-	exporter "github.com/kekscode/calendar-events-exporter/pkg/exporter"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
@@ -29,6 +28,7 @@ var serveCmd = &cobra.Command{
 			urls[i] = strings.TrimSpace(urls[i])
 		}
 
+		// Create the calendar events store
 		store, err := calendar.NewEventStore("ical", urls)
 		if err != nil {
 			log.Printf("Error loading calendar monitor: %v", store)
@@ -43,17 +43,34 @@ var serveCmd = &cobra.Command{
 				case <-done:
 					return
 				case t := <-ticker.C:
+					log.Printf("Tick at", t)
 					store.Update()
 					for _, e := range store.Events() {
-						log.Printf("%v\n", e)
+						log.Printf("%v", e)
+						// Metrics
+						evt := prometheus.NewGauge(
+							prometheus.GaugeOpts{
+								Name: "calendar_event_info",
+								Help: "Info on a calendar event",
+								ConstLabels: prometheus.Labels{
+									"calendar_event_id":          e.ID,
+									"calendar_event_summary":     e.Summary,
+									"calendar_event_description": e.Description,
+									"calendar_event_location":    e.Location,
+									"calendar_event_start":       e.StartTime.String(),
+									"calendar_event_end":         e.EndTime.String(),
+								},
+							},
+						)
+						prometheus.Register(evt)
 					}
-					log.Printf("Tick at", t)
+					//ConstLabels: []prometheus.Labels{"calendar_event_id", "calendar_event_summary", "calendar_event_description", "calendar_event_location", "calendar_event_start", "calendar_event_end"},
+
 				}
 
 			}
 		}()
 
-		prometheus.MustRegister(exporter.NewExporter())
 		http.Handle("/metrics", promhttp.Handler())
 		http.ListenAndServe(":9310", nil)
 
