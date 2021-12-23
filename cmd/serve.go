@@ -43,29 +43,30 @@ var serveCmd = &cobra.Command{
 				case <-done:
 					return
 				case t := <-ticker.C:
-					log.Printf("Tick at", t)
+					// TODO: Add metrics for the number of events in the store
+					// TODO: Add metrics for calendar sources
+					// TODO: Add metrics for the last calendar update
+					// Update the store
 					store.Update()
 					for _, e := range store.Events() {
-						log.Printf("%v", e)
-						// Metrics
+						// Register metric for event
 						evt := prometheus.NewGauge(
 							prometheus.GaugeOpts{
-								Name: "calendar_event_info",
+								Name: "calendar_event",
 								Help: "Info on a calendar event",
 								ConstLabels: prometheus.Labels{
-									"calendar_event_id":          e.ID,
-									"calendar_event_summary":     e.Summary,
-									"calendar_event_description": e.Description,
-									"calendar_event_location":    e.Location,
-									"calendar_event_start":       e.StartTime.String(),
-									"calendar_event_end":         e.EndTime.String(),
+									"id":          e.ID,
+									"summary":     e.Summary,
+									"description": e.Description,
+									"location":    e.Location,
+									"time_start":  e.StartTime.String(),
+									"time_end":    e.EndTime.String(),
+									"updated":     t.String(),
 								},
 							},
 						)
 						prometheus.Register(evt)
 					}
-					//ConstLabels: []prometheus.Labels{"calendar_event_id", "calendar_event_summary", "calendar_event_description", "calendar_event_location", "calendar_event_start", "calendar_event_end"},
-
 				}
 
 			}
