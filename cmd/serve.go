@@ -35,7 +35,7 @@ var serveCmd = &cobra.Command{
 		}
 
 		// Main loop
-		ticker := time.NewTicker(5 * time.Second)
+		ticker := time.NewTicker(1 * time.Second) // We start the first round after 1s
 		done := make(chan bool)
 		go func() {
 			for {
@@ -81,6 +81,8 @@ var serveCmd = &cobra.Command{
 						calendarEventInfo.Set(1.0)
 						prometheus.Register(calendarEventInfo)
 					}
+
+					ticker.Reset(60 * time.Second) // Start a new iteration
 				}
 			}
 		}()
