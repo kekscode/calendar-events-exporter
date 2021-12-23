@@ -45,7 +45,7 @@ var serveCmd = &cobra.Command{
 				case t := <-ticker.C:
 					// TODO: Add metrics for the number of events in the store
 					// TODO: Add metrics for calendar sources
-					// TODO: Add metrics for the last calendar update
+
 					// Update the store
 					store.Update()
 					for _, e := range store.Events() {
@@ -62,11 +62,9 @@ var serveCmd = &cobra.Command{
 									"time_start":  e.StartTime.String(),
 									"time_end":    e.EndTime.String(),
 									"updated":     t.String(),
-								},
-							},
-						)
-						prometheus.Register(evt)
+								}).Set(float64(len(store.Events())))
 					}
+					prometheus.Register(evt)
 				}
 
 			}
