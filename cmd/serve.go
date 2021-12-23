@@ -35,7 +35,7 @@ var serveCmd = &cobra.Command{
 		}
 
 		// Main loop
-		ticker := time.NewTicker(2 * time.Second)
+		ticker := time.NewTicker(5 * time.Second)
 		done := make(chan bool)
 		go func() {
 			for {
@@ -45,14 +45,17 @@ var serveCmd = &cobra.Command{
 				case t := <-ticker.C:
 					// TODO: Add metrics for the number of events in the store
 					// TODO: Add metrics for calendar sources
+					// TODO: Add metrics for event duration in minutes
 
 					// Update the store
 					store.Update()
+
+					// Upsert metrics to prometheus
 					for _, e := range store.Events() {
-						// Register metric for event
-						evt := prometheus.NewGauge(
+						// Create metric for event
+						var evt = prometheus.NewGauge(
 							prometheus.GaugeOpts{
-								Name: "calendar_event",
+								Name: "calendar_event_info",
 								Help: "Info on a calendar event",
 								ConstLabels: prometheus.Labels{
 									"id":          e.ID,
@@ -62,11 +65,17 @@ var serveCmd = &cobra.Command{
 									"time_start":  e.StartTime.String(),
 									"time_end":    e.EndTime.String(),
 									"updated":     t.String(),
-								}).Set(float64(len(store.Events())))
-					}
-					prometheus.Register(evt)
-				}
+								},
+							},
+						)
+						// Set metric to 1 like recommended for software versions:
+						// https://www.robustperception.io/exposing-the-software-version-to-prometheus
+						evt.Set(1.0)
 
+						// Register metric
+						prometheus.Register(evt)
+					}
+				}
 			}
 		}()
 
